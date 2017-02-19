@@ -1,0 +1,6 @@
+.card{
+    box-shadow: 0 0 2px solid grey;
+    height: 300px;
+    max-height: 300px;
+    overflow: hidden;
+}
