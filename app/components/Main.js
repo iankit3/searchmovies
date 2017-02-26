@@ -12,17 +12,25 @@ class Main extends React.Component{
     this.state = {
         movies: [],
         filteredMovies:[],
-        length:0
+        length:0,
+        count:[],
+        currentFourMovies:[]
     }  
   }
 
   handleChange(text){
-      this.setState({ "filteredMovies": this.state.movies.filter( (e) => { 
+     var MOV =  this.state.movies.filter( (e) => { 
          if(e.movie_title.includes(text) || e.plot_keywords.includes(text) ){
             return e 
            }
          })
-      }) 
+     this.setState({ "filteredMovies": MOV, }) 
+
+      var arr = [] , len = MOV.length;
+        for(var i=0;i<len;i=i+4){
+          arr.push(i);
+        }
+        this.setState({"count":arr})
   }
 
   componentDidMount(){
@@ -31,8 +39,21 @@ class Main extends React.Component{
     //       this.setState({movies:res});
     //    })
     myLocalStorage.save('mymovieslist').then( (res) => {
-        this.setState({movies:res,filteredMovies:res,length:res.length});
+        this.setState({movies:res,filteredMovies:res,length:res.length,currentFourMovies:res.splice(0,4)});
+      var MOV = this.state.movies;
+      var arr = [] , len = MOV.length;
+        for(var i=0;i<len;i=i+4){
+          arr.push(i);
+        }
+        this.setState({"count":arr})
     })
+   
+  }
+
+  handlePagination(index){
+    console.log(index)
+    var i = index*4;
+    this.setState({ currentFourMovies:this.state.filteredMovies.slice(i, i+4) });
   }
 
   /*Infinite loop below */
@@ -50,12 +71,12 @@ class Main extends React.Component{
              </div>       
               <div className="row">
                 <div className="col-md-12" style={{height:"400px",overflow:"hidden"}}>    
-                  {this.state.filteredMovies.map( (e,index) =>{
-                  return <Card {...e} index={index}  key={index} />
+                  {this.state.currentFourMovies.map( (e,index) =>{
+                  return <Card  {...e} index={index}  key={index} />
                   })}
                 </div>
               </div>
-                <Page listlength={this.state.length} />
+                <Page handlePagination={this.handlePagination.bind(this)} count={this.state.count} />
           </div>
       )
   }

@@ -15,7 +15,8 @@ let myLocalStorage = {
               resolve(localStorage.getItem(key))
           })//.error( (e) => reject(Error(e)) )
       }else{
-        resolve(myLocalStorage.get('mymovieslist').splice(0,50));
+        // resolve(myLocalStorage.get('mymovieslist').splice(0,50));
+        resolve(myLocalStorage.get('mymovieslist') );
       }
     })
   }

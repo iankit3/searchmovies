@@ -21637,7 +21637,9 @@
 	    _this.state = {
 	      movies: [],
 	      filteredMovies: [],
-	      length: 0
+	      length: 0,
+	      count: [],
+	      currentFourMovies: []
 	    };
 	    return _this;
 	  }
@@ -21645,28 +21647,55 @@
 	  _createClass(Main, [{
 	    key: 'handleChange',
 	    value: function handleChange(text) {
-	      var _this2 = this;
-
-	      var list = this.state.movies.filter(function (e) {
+	      var MOV = this.state.movies.filter(function (e) {
 	        if (e.movie_title.includes(text) || e.plot_keywords.includes(text)) {
 	          return e;
 	        }
-	        _this2.setState({ "filteredMovies": list, "length": list.length });
 	      });
+	      this.setState({ "filteredMovies": MOV });
+
+	      var arr = [],
+	          len = MOV.length;
+	      for (var i = 0; i < len; i = i + 4) {
+	        arr.push(i);
+	      }
+	      this.setState({ "count": arr });
 	    }
 	  }, {
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      var _this3 = this;
+	      var _this2 = this;
 
 	      //  Data.getData('http://starlord.hackerearth.com/simility/movieslisting')
 	      //  .then( (res) => {
 	      //       this.setState({movies:res});
 	      //    })
 	      _myLocalStorage2.default.save('mymovieslist').then(function (res) {
-	        _this3.setState({ movies: res, filteredMovies: res, length: res.length });
+	        _this2.setState({ movies: res, filteredMovies: res, length: res.length, currentFourMovies: res.splice(0, 4) });
+	        var MOV = _this2.state.movies;
+	        var arr = [],
+	            len = MOV.length;
+	        for (var i = 0; i < len; i = i + 4) {
+	          arr.push(i);
+	        }
+	        _this2.setState({ "count": arr });
 	      });
 	    }
+	  }, {
+	    key: 'handlePagination',
+	    value: function handlePagination(index) {
+	      console.log(index);
+	      var i = index * 4;
+	      this.setState({ currentFourMovies: this.state.filteredMovies.slice(i, i + 4) });
+	    }
+
+	    /*Infinite loop below */
+
+	    //   componentWillReceiveProps(prevProps, prevState){
+	    //       this.setState({"length":prevState.filteredMovies.length })
+	    //   }
+
+
 	  }, {
 	    key: 'render',
 	    value: function render() {
@@ -21684,12 +21713,12 @@
 	          _react2.default.createElement(
 	            'div',
 	            { className: 'col-md-12', style: { height: "400px", overflow: "hidden" } },
-	            this.state.filteredMovies.map(function (e, index) {
+	            this.state.currentFourMovies.map(function (e, index) {
 	              return _react2.default.createElement(_Card2.default, _extends({}, e, { index: index, key: index }));
 	            })
 	          )
 	        ),
-	        _react2.default.createElement(_Page2.default, { listlength: this.state.length })
+	        _react2.default.createElement(_Page2.default, { handlePagination: this.handlePagination.bind(this), count: this.state.count })
 	      );
 	    }
 	  }]);
@@ -22039,38 +22068,38 @@
 	    function Page(props) {
 	        _classCallCheck(this, Page);
 
-	        var _this = _possibleConstructorReturn(this, (Page.__proto__ || Object.getPrototypeOf(Page)).call(this, props));
-
-	        _this.state = {
-	            count: []
-	        };
-	        return _this;
+	        return _possibleConstructorReturn(this, (Page.__proto__ || Object.getPrototypeOf(Page)).call(this, props));
+	        // this.state = {
+	        //     count:[],
+	        // }
 	    }
 
+	    // componentWillReceiveProps(nextProps) {
+	    //     var arr = [] , len = this.props.listlength;
+	    //     for(var i=0;i<len;i=i+4){
+	    //       arr.push(i);
+	    //     }
+	    //     this.setState({"count":arr})
+	    // }
+
 	    _createClass(Page, [{
-	        key: "componentWillReceiveProps",
-	        value: function componentWillReceiveProps(nextProps) {
-	            var arr = [],
-	                len = this.props.listlength;
-	            for (var i = 0; i < len; i = i + 4) {
-	                arr.push(i);
-	            }
-	            this.setState({ "count": arr });
-	        }
-	    }, {
 	        key: "render",
 	        value: function render() {
+	            var _this2 = this;
+
 	            return _react2.default.createElement(
 	                "div",
 	                { className: "btnbar row" },
 	                _react2.default.createElement(
 	                    "div",
 	                    null,
-	                    this.state.count.map(function (e, index) {
+	                    this.props.count.map(function (e, index) {
 	                        return _react2.default.createElement(
 	                            "span",
-	                            { className: "mybtn", key: index },
-	                            index + 1
+	                            { className: "mybtn", key: index,
+	                                onClick: _this2.props.handlePagination.bind(_this2, index)
+	                            },
+	                            index * 4 + 1 + ' to ' + parseInt(parseInt(index * 4) + parseInt(4))
 	                        );
 	                    })
 	                )
@@ -22111,7 +22140,8 @@
 	          resolve(localStorage.getItem(key));
 	        }); //.error( (e) => reject(Error(e)) )
 	      } else {
-	        resolve(myLocalStorage.get('mymovieslist').splice(0, 50));
+	        // resolve(myLocalStorage.get('mymovieslist').splice(0,50));
+	        resolve(myLocalStorage.get('mymovieslist'));
 	      }
 	    });
 	  }

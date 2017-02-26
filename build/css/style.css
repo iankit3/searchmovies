@@ -92,7 +92,7 @@ body {
     overflow: hidden;
 }
 
-.mybtn{
+.mybtn:hover{
     padding: 0 calc(100% / 20 - 10px);
     box-sizing: border-box;
     background: lightgray;
@@ -100,7 +100,17 @@ body {
     border-radius: 4px;
     /* margin: 0 0.5% 0 0.5%; */
     margin-right: 1%;
+    width: auto;
+    height: auto;
     /*border: 1px solid;*/
+}
+
+.mybtn{
+    width: 20px;
+    height: 22px;
+    display: inline-block;
+    overflow: hidden;
+    margin-right: 1%;
 }
 
 
